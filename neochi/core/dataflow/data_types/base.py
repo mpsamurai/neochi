@@ -79,30 +79,20 @@ class Header(TypedDict):
     def timestamp(self):
         return self.__dict__['timestamp']
 
+    def update_timestamp(self):
+        self.__dict__['timestamp'] = self._required_fields['timestamp']['default']()
+
 
 class Payload:
     _header_cls = Header
 
     def __init__(self, payload={}):
         self._value = {
-            'header': self._header_cls({
-                'timestamp': self._time()
-            }),
+            'header': self._header_cls({}),
             'body': payload['body'] if 'body' in payload else None
         }
         if 'header' in payload:
             self._value['header'].update(payload['header'])
-
-    @staticmethod
-    def _time():
-        return time.time()
-
-    def _update_timestamp(self, timestamp=None):
-        if not timestamp:
-            self._value['header']['timestamp'] = self._time()
-        else:
-            assert isinstance(timestamp, float)
-            self._value['header']['timestamp'] = timestamp
 
     @property
     def header(self):
@@ -110,11 +100,11 @@ class Payload:
 
     def set_header(self, header):
         self._value['header'] = self._header_cls(header)
-        self._update_timestamp()
+        self._value['header'].update_timestamp()
 
     def update_header(self, header):
         self._value['header'].update(header)
-        self._update_timestamp()
+        self._value['header'].update_timestamp()
 
     @property
     def body(self):
@@ -122,11 +112,11 @@ class Payload:
 
     def set_body(self, body):
         self._value['body'] = body
-        self._update_timestamp()
+        self._value['header'].update_timestamp()
 
     def update_body(self, body):
         self._value['body'].update(body)
-        self._update_timestamp()
+        self._value['header'].update_timestamp()
 
     @property
     def value(self):
