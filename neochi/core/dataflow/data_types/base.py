@@ -172,6 +172,8 @@ class Payload:
 
 
 class BaseDataType:
+    readonly = False
+
     def __init__(self):
         self._payload = Payload()
 
@@ -202,6 +204,12 @@ class BaseDataType:
     def to_json(self):
         return self._payload.to_json()
 
+    def __setattr__(self, key, value):
+        if self.readonly and key == 'value':
+            raise AttributeError('{} is readonly.'.format(self.__class__.__name__))
+        else:
+            super().__setattr__(key, value)
+
 
 class Json(BaseDataType):
     pass
@@ -230,9 +238,7 @@ class AtomicDataType(BaseDataType):
 class Null(AtomicDataType):
     data_type = type(None)
     default_value = None
-
-    def _set_value(self, value):
-        super()._set_value(None)
+    readonly = True
 
 
 class Int(AtomicDataType):

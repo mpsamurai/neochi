@@ -64,12 +64,14 @@ class TestJson(unittest.TestCase):
 
 
 class TestNull(unittest.TestCase):
-    def test_if_it_always_returns_string_none(self):
+    def test_if_it_returns_none(self):
         data = base.Null()
         self.assertEqual(data.value, None)
 
-        data.value = 'abc'
-        self.assertEqual(data.value, None)
+    def test_if_it_is_readonly(self):
+        data = base.Null()
+        with self.assertRaises(AttributeError):
+            data.value = 'abc'
 
 
 class TestInt(unittest.TestCase):
