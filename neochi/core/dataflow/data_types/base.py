@@ -160,6 +160,9 @@ class Payload:
     def to_json(self):
         return json.dumps(self._value, cls=PayloadJsonEncoder)
 
+    def from_json(self, json_obj):
+        self.set_value(json.loads(json_obj, cls=PayloadJsonDecoder))
+
 
 class BaseDataType:
     def __init__(self):
@@ -185,7 +188,7 @@ class BaseDataType:
     @value.setter
     def value(self, val):
         if isinstance(val, bytes):
-            self._payload.set_value(json.loads(val.decode(), cls=PayloadJsonDecoder))
+            self._payload.from_json(val.decode())
         else:
             self._set_value(val)
 
