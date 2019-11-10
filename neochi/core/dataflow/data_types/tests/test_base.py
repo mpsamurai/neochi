@@ -58,6 +58,10 @@ class TestJson(unittest.TestCase):
         data1 = base.Json()
         self.assertGreater(data1.header.timestamp, data0.header.timestamp)
 
+    def test_if_it_is_json_serializable(self):
+        data = base.Json()
+        data.to_json()
+
 
 class TestNull(unittest.TestCase):
     def test_if_it_always_returns_string_none(self):

@@ -29,7 +29,31 @@ import json
 import base64
 import time
 from collections import abc
+import importlib
 import numpy as np
+
+
+class PayloadJsonEncoder(json.JSONEncoder):
+    def default(self, o):
+        if hasattr(o, '__json__'):
+            json_obj = o.__json__()
+            json_obj['__json__'] = '{}/{}'.format(o.__module__, o.__class__.__name__)
+            return json_obj
+        return super().default(o)
+
+
+class PayloadJsonDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(object_hook=self._object_hook, *args, **kwargs)
+
+    def _object_hook(self, obj):
+        if '__json__' in obj:
+            module_path, cls_name = obj['__json__'].split('/')
+            cls = getattr(importlib.import_module(module_path), cls_name)
+            del obj['__json__']
+            return cls(obj)
+        else:
+            return obj
 
 
 class TypedDict(abc.MutableMapping):
@@ -68,6 +92,9 @@ class TypedDict(abc.MutableMapping):
 
     def __repr__(self):
         return '{}, {}({})'.format(super().__repr__(), self.__class__.__name__, self.__dict__)
+
+    def __json__(self):
+        return self.__dict__
 
 
 class Header(TypedDict):
@@ -131,7 +158,7 @@ class Payload:
         self.update_body(value['body'])
 
     def to_json(self):
-        return json.dumps(self._value)
+        return json.dumps(self._value, cls=PayloadJsonEncoder)
 
 
 class BaseDataType:
@@ -158,7 +185,7 @@ class BaseDataType:
     @value.setter
     def value(self, val):
         if isinstance(val, bytes):
-            self._payload.set_value(json.loads(val.decode()))
+            self._payload.set_value(json.loads(val.decode(), cls=PayloadJsonDecoder))
         else:
             self._set_value(val)
 
