@@ -110,16 +110,24 @@ class Header(TypedDict):
         self.__dict__['timestamp'] = self._required_fields['timestamp']['default']()
 
 
+class Body(TypedDict):
+    pass
+
+
 class Payload:
     _header_cls = Header
+    _body_cls = Body
 
     def __init__(self, payload={}):
         self._value = {
             'header': self._header_cls({}),
-            'body': payload['body'] if 'body' in payload else None
+            'body': self._body_cls({})
         }
+        print(payload)
         if 'header' in payload:
             self._value['header'].update(payload['header'])
+        if 'body' in payload:
+            self._value['body'].update(payload['body'])
 
     @property
     def header(self):
@@ -266,7 +274,7 @@ class Image(BaseDataType):
 
     def _get_value(self):
         value = super()._get_value()
-        if value is None:
+        if not value:
             return None
         if isinstance(value['image'], str):
             decoded_image = base64.b64decode(value['image'].encode())
