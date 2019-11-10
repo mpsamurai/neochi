@@ -123,7 +123,6 @@ class Payload:
             'header': self._header_cls({}),
             'body': self._body_cls({})
         }
-        print(payload)
         if 'header' in payload:
             self._value['header'].update(payload['header'])
         if 'body' in payload:
