@@ -28,12 +28,14 @@ import unittest
 import numpy as np
 from ..core.dataflow.data import eye
 from ..core.dataflow.backends import caches
+from ..neochi import settings
 
 
 class TestEyeImage(unittest.TestCase):
     def setUp(self):
         self.images = [image for image in np.random.randint(0, 256, size=(10, 240, 320)).astype(np.uint8)]
-        self.cache = caches.get_cache('neochi.core.dataflow.backends.caches.redis.RedisCache')('redis')
+        self.cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
+                                      **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
 
     def test_if_it_accepts_images(self):
         data0 = eye.Image(self.cache)
@@ -46,7 +48,8 @@ class TestEyeImage(unittest.TestCase):
 
 class TestEyeState(unittest.TestCase):
     def setUp(self):
-        self.cache = caches.get_cache('neochi.core.dataflow.backends.caches.redis.RedisCache')('redis')
+        self.cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
+                                      **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
 
     def test_if_it_accepts_valid_json(self):
         data0 = eye.State(self.cache)

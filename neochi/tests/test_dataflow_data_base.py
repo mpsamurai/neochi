@@ -25,14 +25,15 @@ __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
 import unittest
-import numpy as np
 from ..core.dataflow.data import base
 from ..core.dataflow.backends import caches
+from ..neochi import settings
 
 
 class TestJsonData(unittest.TestCase):
     def setUp(self):
-        self.cache = caches.get_cache('neochi.core.dataflow.backends.caches.redis.RedisCache')('redis')
+        self.cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
+                                      **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
 
     def test_if_it_accepts_json(self):
         data0 = base.JsonData(self.cache)
