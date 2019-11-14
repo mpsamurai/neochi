@@ -34,5 +34,9 @@ class State(base.JsonData):
     _data_type_cls = data_types.Json
     _key = 'eye:state'
     _required_field = {
+        'size': {'type': list, 'default': [32, 32]},
+        'rotation_pc': {'type': float, 'default': 0.},
+        'rotation_pi': {'type': float, 'default': 90},
+        'fps': {'type': float, 'default': 1.},
         'is_capturing': {'type': bool, 'default': True}
     }
