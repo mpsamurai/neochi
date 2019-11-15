@@ -107,10 +107,14 @@ class Data(abc.ABC):
 class Image(Data):
     class Serializer(serializers.Serializer):
         _schema = Schema.create(body={
-            'height': {'type': 'integer'},
-            'width': {'type': 'integer'},
-            'channel': {'type': 'integer'},
-            'image': {'type': 'string'},
+            'type': 'object',
+            'properties': {
+                'height': {'type': 'integer'},
+                'width': {'type': 'integer'},
+                'channel': {'type': 'integer'},
+                'image': {'type': 'string'},
+            },
+            'required': ['height', 'width', 'image', ]
         })
 
     _serializer = Serializer()
