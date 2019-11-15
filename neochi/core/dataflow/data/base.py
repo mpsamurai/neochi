@@ -27,6 +27,8 @@ __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 import time
 import copy
 import abc
+import numpy as np
+import base64
 from .. import serializers
 
 
@@ -41,10 +43,7 @@ class Schema:
                 },
                 'required': ['timestamp', ]
             },
-            'body': {
-                'type': 'object',
-                'properties': {}
-            }
+            'body': {}
         },
         'required': ['header', 'body']
     }
@@ -53,9 +52,9 @@ class Schema:
     def create(cls, header=None, body=None):
         schema = copy.deepcopy(cls._schema)
         if header:
-            schema['properties']['header']['properties'].update(header)
+            schema['properties']['header'].update(header)
         if body:
-            schema['properties']['body']['properties'].update(body)
+            schema['properties']['body'].update(body)
         return schema
 
 
@@ -104,3 +103,47 @@ class Data(abc.ABC):
         self._set_value(v)
         self._update_timestamp()
         self._upload_data()
+
+
+class ImageSerializer(serializers.Serializer):
+    _schema = Schema.create(body={
+        'height': {'type': 'integer'},
+        'width': {'type': 'integer'},
+        'channel': {'type': 'integer'},
+        'image': {'type': 'string'},
+    })
+
+
+class Image(Data):
+    _serializer = ImageSerializer()
+    _key = 'image'
+
+    def _set_value(self, value):
+        if isinstance(value, list):
+            value = np.array(value, dtype=np.uint8)
+        if not isinstance(value, np.ndarray):
+            raise ValueError('Value must be ndarray.')
+        if not (len(value.shape) == 2 or len(value.shape) == 3):
+            raise ValueError('Dimension of ndarray must be 2 or 3')
+        if len(value.shape) == 3 and value.shape[2] != 3:
+            raise ValueError('Channel length must be 3.')
+        encoded_image = base64.b64encode(value.tostring()).decode()
+        if len(value.shape) == 2:
+            self._data['body'] = {'height': value.shape[0],
+                                  'width': value.shape[1],
+                                  'image': encoded_image}
+        elif len(value.shape) == 3:
+            self._data['body'] = {'height': value.shape[0],
+                                  'width': value.shape[1],
+                                  'channel': value.shape[2],
+                                  'image': encoded_image}
+
+    def _get_value(self):
+        decoded_image = base64.b64decode(self._data['body']['image'].encode())
+        if 'channel' in self._data['body']:
+            image = np.frombuffer(decoded_image, dtype=np.uint8)\
+                .reshape((self._data['body']['height'], self._data['body']['width'], self._data['body']['channel']))
+        else:
+            image = np.frombuffer(decoded_image, dtype=np.uint8)\
+                .reshape((self._data['body']['height'], self._data['body']['width']))
+        return image

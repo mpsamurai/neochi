@@ -1,1 +1,1 @@
-from .base import Schema, Data
+from .base import Schema, Data, Image
