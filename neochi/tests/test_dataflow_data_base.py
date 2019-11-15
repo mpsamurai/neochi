@@ -25,42 +25,66 @@ __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
 import unittest
-from ..core.dataflow.data import base
 from ..core.dataflow.backends import caches
+from ..core.dataflow import serializers
+from ..core.dataflow import data
 from ..neochi import settings
 
 
-class TestJsonData(unittest.TestCase):
+class SampleSerializer(serializers.Serializer):
+    _schema = data.Schema.create(body={
+        'value': {
+            'type': 'object',
+            'properties': {
+                'key': {'type': 'string'},
+                'value': {'type': 'string', 'default': 'None'},
+                'description': {'type': 'string'},
+            },
+            'required': ['key', 'value']
+        }
+    })
+
+
+class SampleData(data.Data):
+    _serializer = SampleSerializer()
+    _key = 'sample_data'
+
+    def _get_value(self):
+        return self._data['body']['value']
+
+    def _set_value(self, value):
+        self._data['body']['value'] = value
+
+
+class TestData(unittest.TestCase):
     def setUp(self):
-        self.cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
-                                      **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
+        self._cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
+                                       **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
 
-    def test_if_it_accepts_json(self):
-        data0 = base.JsonData(self.cache)
-        data0.value = {'key': 'value'}
-        data1 = base.JsonData(self.cache)
-        self.assertEqual(data0.value['key'], data1.value['key'])
+    def test_if_it_can_sets_and_gets_value(self):
+        d0 = SampleData(self._cache)
+        d0.value = {
+            'key': 'Hello',
+            'value': 'Junya!',
+            'description': 'Hello Junya!'
+        }
+        d1 = SampleData(self._cache)
+        self.assertEqual(d1.value['key'], 'Hello')
+        self.assertEqual(d1.value['value'], 'Junya!')
+        self.assertEqual(d1.value['description'], 'Hello Junya!')
 
-    def test_if_it_raises_exception_if_required_fields_are_missed(self):
-        class TestClass(base.JsonData):
-            _required_field = {'rkey': {'type': str}}
+    def test_if_it_raises_validation_error_when_required_field_is_missing(self):
+        d0 = SampleData(self._cache)
+        with self.assertRaises(serializers.exceptions.ValidationError):
+            d0.value = {
+                'value': 'Junya!',
+                'description': 'Hello Junya!'
+            }
 
-        data = TestClass(self.cache)
-        with self.assertRaises(ValueError):
-            data.value = {}
-
-    def test_if_it_sets_default_value_if_required_fields_are_missed(self):
-        class TestClass(base.JsonData):
-            _required_field = {'rkey': {'type': str, 'default': 'default'}}
-
-        data = TestClass(self.cache)
-        data.value = {}
-        self.assertEqual(data.value['rkey'], 'default')
-
-    def test_if_raises_exception_if_type_of_required_fields_are_mismatched(self):
-        class TestClass(base.JsonData):
-            _required_field = {'rkey': {'type': str}}
-
-        data = TestClass(self.cache)
-        with self.assertRaises(ValueError):
-            data.value = {'rkey': 100}
+    def test_if_it_fills_default_values(self):
+        d0 = SampleData(self._cache)
+        d0.value = {
+            'key': 'Hello',
+            'description': 'Hello Junya!'
+        }
+        self.assertEqual(d0.value['value'], 'None')

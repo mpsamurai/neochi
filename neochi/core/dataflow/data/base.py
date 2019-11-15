@@ -24,51 +24,82 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-from .. import data_types
+import time
+import copy
+import abc
+from .. import serializers
 
 
-class BaseData:
-    _data_type_cls = None
+class Schema:
+    _schema = {
+        'type': 'object',
+        'properties': {
+            'header': {
+                'type': 'object',
+                'properties': {
+                    'timestamp': {'type': 'number', 'default': time.time}
+                },
+                'required': ['timestamp', ]
+            },
+            'body': {
+                'type': 'object',
+                'properties': {}
+            }
+        },
+        'required': ['header', 'body']
+    }
+
+    @classmethod
+    def create(cls, header=None, body=None):
+        schema = copy.deepcopy(cls._schema)
+        if header:
+            schema['properties']['header']['properties'].update(header)
+        if body:
+            schema['properties']['body']['properties'].update(body)
+        return schema
+
+
+class Serializer(serializers.Serializer):
+    _schema = Schema.create()
+
+
+class Data(abc.ABC):
+    _serializer = serializers.Serializer()
     _key = ''
 
     def __init__(self, cache):
         self._cache = cache
-        self._data_type = self._data_type_cls()
+        self._data = {'header': {}, 'body': {}}
 
-    def _validate(self, value):
-        return value
+    def _update_timestamp(self):
+        self._data['header']['timestamp'] = time.time()
+
+    def _download_data(self):
+        json_str = self._cache.get(self._key)
+        if json_str is None:
+            return None
+        self._data = self._serializer.deserialize(json_str)
+
+    def _upload_data(self):
+        json_str = self._serializer.serialize(self._data)
+        self._cache.set(self._key, json_str)
+
+    def _get_value(self):
+        raise NotImplementedError
+
+    def _set_value(self, value):
+        raise NotImplementedError
 
     @property
     def timestamp(self):
-        return self._data_type.header.timestamp
+        return self._data['header']['timestamp']
 
     @property
     def value(self):
-        self._data_type.value = self._cache.get(self._key)
-        return self._validate(self._data_type.value)
+        self._download_data()
+        return self._get_value()
 
     @value.setter
-    def value(self, val):
-        self._data_type.value = self._validate(val)
-        self._cache.set(self._key, self._data_type.to_json())
-
-
-class JsonData(BaseData):
-    _data_type_cls = data_types.Json
-    _key = ''
-    _required_field = {}
-
-    def _validate(self, value):
-        for key in self._required_field:
-            if key not in value:
-                if 'default' in self._required_field[key]:
-                    if callable(self._required_field[key]['default']):
-                        value[key] = self._required_field[key]['default']()
-                    else:
-                        value[key] = self._required_field[key]['default']
-                else:
-                    raise ValueError('Key "{}" is required.'.format(key))
-            if not isinstance(value[key], self._required_field[key]['type']):
-                raise ValueError('Key "{}" expects type "{}" but type "{}" is given.'.format(
-                    key, self._required_field[key]['type'], type(value[key])))
-        return value
+    def value(self, v):
+        self._set_value(v)
+        self._upload_data()
