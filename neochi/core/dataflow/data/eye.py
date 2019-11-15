@@ -21,6 +21,9 @@
 # SOFTWARE.
 
 
+__author__ = 'junya@mpsamurai.org'
+
+
 from . import base
 from .. import serializers
 
