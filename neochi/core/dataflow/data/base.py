@@ -102,4 +102,5 @@ class Data(abc.ABC):
     @value.setter
     def value(self, v):
         self._set_value(v)
+        self._update_timestamp()
         self._upload_data()
