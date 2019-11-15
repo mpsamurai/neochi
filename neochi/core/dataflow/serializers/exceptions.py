@@ -24,17 +24,4 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-import unittest
-from ..core.dataflow.backends import caches
-from ..neochi import settings
-
-
-class TestRedis(unittest.TestCase):
-    def setUp(self):
-        self.cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
-                                      **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
-
-    def if_it_can_set_and_get_value(self):
-        data = {'key': 'key', 'value': 'value'}
-        self.cache.set(**data)
-        self.assertEqual(data['key'], self.cache.get('key'))
+from jsonschema.exceptions import ValidationError

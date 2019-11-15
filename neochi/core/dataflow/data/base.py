@@ -24,51 +24,124 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-from .. import data_types
+import time
+import copy
+import abc
+import numpy as np
+import base64
+from .. import serializers
 
 
-class BaseData:
-    _data_type_cls = None
+class Schema:
+    _schema = {
+        'type': 'object',
+        'properties': {
+            'header': {
+                'type': 'object',
+                'properties': {
+                    'timestamp': {'type': 'number', 'default': time.time}
+                },
+                'required': ['timestamp', ]
+            },
+            'body': {}
+        },
+        'required': ['header', 'body']
+    }
+
+    @classmethod
+    def create(cls, header=None, body=None):
+        schema = copy.deepcopy(cls._schema)
+        if header:
+            schema['properties']['header'].update(header)
+        if body:
+            schema['properties']['body'].update(body)
+        return schema
+
+
+class Data(abc.ABC):
+    class Serializer(serializers.Serializer):
+        _schema = Schema.create()
+
+    _serializer = serializers.Serializer()
     _key = ''
 
     def __init__(self, cache):
         self._cache = cache
-        self._data_type = self._data_type_cls()
+        self._data = {'header': {}, 'body': {}}
 
-    def _validate(self, value):
-        return value
+    def _update_timestamp(self):
+        self._data['header']['timestamp'] = time.time()
+
+    def _download_data(self):
+        json_str = self._cache.get(self._key)
+        if json_str is None:
+            return None
+        self._data = self._serializer.deserialize(json_str)
+
+    def _upload_data(self):
+        json_str = self._serializer.serialize(self._data)
+        self._cache.set(self._key, json_str)
+
+    def _get_value(self):
+        raise NotImplementedError
+
+    def _set_value(self, value):
+        raise NotImplementedError
 
     @property
     def timestamp(self):
-        return self._data_type.header.timestamp
+        return self._data['header']['timestamp']
 
     @property
     def value(self):
-        self._data_type.value = self._cache.get(self._key)
-        return self._validate(self._data_type.value)
+        self._download_data()
+        return self._get_value()
 
     @value.setter
-    def value(self, val):
-        self._data_type.value = self._validate(val)
-        self._cache.set(self._key, self._data_type.to_json())
+    def value(self, v):
+        self._set_value(v)
+        self._update_timestamp()
+        self._upload_data()
 
 
-class JsonData(BaseData):
-    _data_type_cls = data_types.Json
-    _key = ''
-    _required_field = {}
+class Image(Data):
+    class Serializer(serializers.Serializer):
+        _schema = Schema.create(body={
+            'height': {'type': 'integer'},
+            'width': {'type': 'integer'},
+            'channel': {'type': 'integer'},
+            'image': {'type': 'string'},
+        })
 
-    def _validate(self, value):
-        for key in self._required_field:
-            if key not in value:
-                if 'default' in self._required_field[key]:
-                    if callable(self._required_field[key]['default']):
-                        value[key] = self._required_field[key]['default']()
-                    else:
-                        value[key] = self._required_field[key]['default']
-                else:
-                    raise ValueError('Key "{}" is required.'.format(key))
-            if not isinstance(value[key], self._required_field[key]['type']):
-                raise ValueError('Key "{}" expects type "{}" but type "{}" is given.'.format(
-                    key, self._required_field[key]['type'], type(value[key])))
-        return value
+    _serializer = Serializer()
+    _key = 'image'
+
+    def _set_value(self, value):
+        if isinstance(value, list):
+            value = np.array(value, dtype=np.uint8)
+        if not isinstance(value, np.ndarray):
+            raise ValueError('Value must be ndarray.')
+        if not (len(value.shape) == 2 or len(value.shape) == 3):
+            raise ValueError('Dimension of ndarray must be 2 or 3')
+        if len(value.shape) == 3 and value.shape[2] != 3:
+            raise ValueError('Channel length must be 3.')
+        encoded_image = base64.b64encode(value.tostring()).decode()
+        if len(value.shape) == 2:
+            self._data['body'] = {'height': value.shape[0],
+                                  'width': value.shape[1],
+                                  'image': encoded_image}
+        elif len(value.shape) == 3:
+            self._data['body'] = {'height': value.shape[0],
+                                  'width': value.shape[1],
+                                  'channel': value.shape[2],
+                                  'image': encoded_image}
+
+    def _get_value(self):
+        decoded_image = base64.b64decode(self._data['body']['image'].encode())
+        if 'channel' in self._data['body']:
+            image = np.frombuffer(decoded_image, dtype=np.uint8)\
+                .reshape((self._data['body']['height'], self._data['body']['width'], self._data['body']['channel']))
+        else:
+            image = np.frombuffer(decoded_image, dtype=np.uint8)\
+                .reshape((self._data['body']['height'], self._data['body']['width']))
+        return image

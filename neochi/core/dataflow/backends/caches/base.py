@@ -38,8 +38,8 @@ class Cache(abc.ABC):
         raise NotImplementedError
 
 
-def get_cache(class_path):
+def get_cache(class_path, **kwargs):
     class_path = class_path.split('.')
     module_path = '.'.join(class_path[:-1])
     class_name = class_path[-1]
-    return getattr(importlib.import_module(module_path), class_name)
+    return getattr(importlib.import_module(module_path), class_name)(**kwargs)

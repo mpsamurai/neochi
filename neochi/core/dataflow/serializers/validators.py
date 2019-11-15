@@ -24,17 +24,19 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-import unittest
-from ..core.dataflow.backends import caches
-from ..neochi import settings
+import jsonschema
 
 
-class TestRedis(unittest.TestCase):
-    def setUp(self):
-        self.cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
-                                      **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
+def default_value_extension(validator_class):
+    validate_properties = validator_class.VALIDATORS['properties']
 
-    def if_it_can_set_and_get_value(self):
-        data = {'key': 'key', 'value': 'value'}
-        self.cache.set(**data)
-        self.assertEqual(data['key'], self.cache.get('key'))
+    def set_defaults(validator, properties, instance, schema):
+        for property, subschema in properties.items():
+            if 'default' in subschema:
+                default_value = subschema['default']() \
+                    if callable(subschema['default']) else subschema['default']
+                instance.setdefault(property, default_value)
+        for error in validate_properties(validator, properties, instance, schema):
+            yield error
+
+    return jsonschema.validators.extend(validator_class, {'properties': set_defaults})
