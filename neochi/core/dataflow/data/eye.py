@@ -22,21 +22,32 @@
 
 
 from . import base
-from .. import data_types
+from .. import serializers
 
 
-class Image(base.BaseData):
-    _data_type_cls = data_types.Image
+class Image(base.Image):
     _key = 'eye:image'
 
 
-class State(base.JsonData):
-    _data_type_cls = data_types.Json
+class State(base.Data):
+    class Serializer(serializers.Serializer):
+        _schema = base.Schema.create(body={
+            'type': 'object',
+            'properties': {
+                'size': {'type': 'array', 'default': [32, 32]},
+                'rotation_pc': {'type': 'number', 'default': 0.},
+                'rotation_pi': {'type': 'number', 'default': 90},
+                'fps': {'type': 'number', 'default': 1.},
+                'is_capturing': {'type': 'boolean', 'default': True}
+            },
+            'required': ['size', 'rotation_pc', 'rotation_pi', 'fps', 'is_capturing']
+        })
+
+    _serializer = Serializer()
     _key = 'eye:state'
-    _required_field = {
-        'size': {'type': list, 'default': [32, 32]},
-        'rotation_pc': {'type': float, 'default': 0.},
-        'rotation_pi': {'type': float, 'default': 90},
-        'fps': {'type': float, 'default': 1.},
-        'is_capturing': {'type': bool, 'default': True}
-    }
+
+    def _get_value(self):
+        return self._data['body']
+
+    def _set_value(self, value):
+        self._data['body'].update(value)

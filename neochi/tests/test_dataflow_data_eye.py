@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2019 Morning Project Samurai (MPS)
+# Copyright (c) 2019 Morning Project Samurai Inc. (MPS)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 import unittest
 import numpy as np
 from ..core.dataflow.data import eye
+from ..core.dataflow import serializers
 from ..core.dataflow.backends import caches
 from ..neochi import settings
 
@@ -60,5 +61,6 @@ class TestEyeState(unittest.TestCase):
 
     def test_if_it_does_not_accept_invalid_json(self):
         data = eye.State(self.cache)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(serializers.exceptions.ValidationError):
             data.value = {'is_capturing': 100}
+            print(data.value)

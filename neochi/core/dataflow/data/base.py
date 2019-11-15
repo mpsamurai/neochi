@@ -58,11 +58,10 @@ class Schema:
         return schema
 
 
-class Serializer(serializers.Serializer):
-    _schema = Schema.create()
-
-
 class Data(abc.ABC):
+    class Serializer(serializers.Serializer):
+        _schema = Schema.create()
+
     _serializer = serializers.Serializer()
     _key = ''
 
@@ -105,17 +104,16 @@ class Data(abc.ABC):
         self._upload_data()
 
 
-class ImageSerializer(serializers.Serializer):
-    _schema = Schema.create(body={
-        'height': {'type': 'integer'},
-        'width': {'type': 'integer'},
-        'channel': {'type': 'integer'},
-        'image': {'type': 'string'},
-    })
-
-
 class Image(Data):
-    _serializer = ImageSerializer()
+    class Serializer(serializers.Serializer):
+        _schema = Schema.create(body={
+            'height': {'type': 'integer'},
+            'width': {'type': 'integer'},
+            'channel': {'type': 'integer'},
+            'image': {'type': 'string'},
+        })
+
+    _serializer = Serializer()
     _key = 'image'
 
     def _set_value(self, value):
