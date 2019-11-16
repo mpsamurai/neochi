@@ -49,4 +49,5 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Create docker image
+      run: |
         ./build-all.sh
