@@ -6,6 +6,7 @@ on:
     branches:
       - master
       - develop
+      - feature/dockerize-10
 
 jobs:
   build:
@@ -40,3 +41,7 @@ jobs:
       run: |
         sudo pip3 install pytest
         pytest
+    - name: Create docker image
+      run: |
+        sudo ./setup-build-env-on-ubuntu-18.04.sh
+        ./build-all.sh
