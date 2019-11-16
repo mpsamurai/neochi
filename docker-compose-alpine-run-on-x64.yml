@@ -1,13 +1,14 @@
 version: '3'
 services:
-  neochi-package-test:
+  neochi:
     build:
       context: .
+      dockerfile: Dockerfile-x64
     volumes:
       - ./uploads:/uploads
       - ./data:/data
       - ./models:/models
-    command: ["python3", "scripts/brain/predict.py"]
+    command: ["python", "scripts/brain/predict.py"]
     depends_on:
       - redis
     network_mode: "host"

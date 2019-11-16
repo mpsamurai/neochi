@@ -12,9 +12,6 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    container:
-      image: python:3.6.9-stretch
-
     services:
       redis:
         image: redis

@@ -8,6 +8,7 @@ services:
     network_mode: "host"
   neochi:
     image: mpsamurai/neochi:20191201-raspbian
+    command: ["python3", "scripts/brain/predict.py"]
     volumes:
       - ./uploads:/uploads
       - ./data:/data

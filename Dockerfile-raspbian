@@ -48,4 +48,4 @@ ENTRYPOINT ["entrypoint.sh"]
 
 ENV PYTHONUNBUFFERED 1
 
-CMD ["run-all.sh"]
+CMD ["scripts/run-all.sh"]
