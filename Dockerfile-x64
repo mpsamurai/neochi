@@ -66,4 +66,4 @@ ENTRYPOINT ["entrypoint.sh"]
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["nosetests", "--with-coverage", "--cover-html", "--cover-package", "neochi"]
+CMD ["scripts/run-all.sh"]
