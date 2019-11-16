@@ -110,3 +110,6 @@ Pipfile.lock
 **/*.zip
 **/*.json
 **/*.h5
+
+# To compile raspbian
+qemu-arm-static
