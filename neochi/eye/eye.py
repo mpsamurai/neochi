@@ -104,15 +104,16 @@ def get_capture(size, rotation_pc=0, rotation_pi=90):
 
 
 class Eye:
-    def __init__(self, cache, size=[32, 32], rotation_pc=0., rotation_pi=90., fps=0.5):
+    def __init__(self, cache, size=[32, 32], rotation_pc=0., rotation_pi=90., fps=0.5, init=True):
         self._cache = cache
         self._image = data.eye.Image(cache)
         self._state = data.eye.State(cache)
-        self._state.value = {'size': size,
-                             'rotation_pc': rotation_pc,
-                             'rotation_pi': rotation_pi,
-                             'fps': fps,
-                             'is_capturing': False}
+        if init:
+            self._state.value = {'size': size,
+                                 'rotation_pc': rotation_pc,
+                                 'rotation_pi': rotation_pi,
+                                 'fps': fps,
+                                 'is_capturing': False}
 
     @property
     def image(self):

@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2019 Morning Project Samurai Inc. (MPS)
+# Copyright (c) 2019 Morning Project Samurai (MPS)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,26 +24,23 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-DATAFLOW = {
-    'BACKEND': {
-        'CACHE': {
-            'MODULE': 'neochi.core.dataflow.backends.caches.redis.RedisCache',
-            'KWARGS': {
-                'host': 'redis'
-            }
-        }
-    }
-}
+class Model:
+    def __init__(self, *args, **kwargs):
+        print('INITIALIZE MODEL %s' % self.__class__.__name__)
+        self._model = None
+        print('MODEL %s INITIALIZED' % self.__class__.__name__)
 
-BRAIN = {
-    'DATA': {
-        'UPLOAD_DIR': '/uploads',
-        'ZIP_PATH': '/uploads/data.zip',
-        'DIR': '/data'
-    },
-    'MODEL': {
-        'MODULE': 'neochi.brain.models.behavior.BehaviorClassifier',
-        'KWARGS': {},
-        'DIR': '/models'
-    }
-}
+    def fit(self, X, y):
+        return self
+
+    def predict(self, X):
+        raise NotImplementedError
+
+    def score(self, X, y):
+        raise NotImplementedError
+
+    def save(self, save_dir):
+        pass
+
+    def load(self, save_dir):
+        pass

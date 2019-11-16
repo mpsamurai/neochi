@@ -3,6 +3,11 @@ services:
   neochi-package-test:
     build:
       context: .
+    volumes:
+      - ./uploads:/uploads
+      - ./data:/data
+      - ./models:/models
+    command: ["python3", "scripts/brain/predict.py"]
     depends_on:
       - redis
   redis:

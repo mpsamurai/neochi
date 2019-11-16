@@ -24,26 +24,44 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-DATAFLOW = {
-    'BACKEND': {
-        'CACHE': {
-            'MODULE': 'neochi.core.dataflow.backends.caches.redis.RedisCache',
-            'KWARGS': {
-                'host': 'redis'
-            }
-        }
-    }
-}
+import time
+import numpy as np
+from neochi import utils
+from neochi.core.dataflow.backends import caches
+from neochi.core.dataflow.data import eye
+from neochi.neochi import settings
 
-BRAIN = {
-    'DATA': {
-        'UPLOAD_DIR': '/uploads',
-        'ZIP_PATH': '/uploads/data.zip',
-        'DIR': '/data'
-    },
-    'MODEL': {
-        'MODULE': 'neochi.brain.models.behavior.BehaviorClassifier',
-        'KWARGS': {},
-        'DIR': '/models'
-    }
-}
+
+def wait(start_time):
+    time.sleep(np.max((0, 1. - (time.time() - start_time))))
+
+
+if __name__ == '__main__':
+    cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'],
+                             **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
+    image = eye.Image(cache)
+    state = eye.State(cache)
+    model = utils.load_module(settings.BRAIN['MODEL']['MODULE'])()
+    model.load(settings.BRAIN['MODEL']['DIR'])
+
+    images = []
+    while True:
+        start_time = time.time()
+        if not state.value['is_capturing']:
+            images = []
+            wait(start_time)
+            continue
+
+        if len(images) < 5:
+            images.append(image.value)
+            wait(start_time)
+            continue
+
+        if len(images) == 5:
+            images.pop(0)
+            images.append(image.value)
+
+        X = np.array(images)
+        X = X.reshape((-1, 32, 32, 15))
+        print(model.predict(X))
+        wait(start_time)

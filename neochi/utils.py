@@ -24,26 +24,11 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-DATAFLOW = {
-    'BACKEND': {
-        'CACHE': {
-            'MODULE': 'neochi.core.dataflow.backends.caches.redis.RedisCache',
-            'KWARGS': {
-                'host': 'redis'
-            }
-        }
-    }
-}
+import importlib
 
-BRAIN = {
-    'DATA': {
-        'UPLOAD_DIR': '/uploads',
-        'ZIP_PATH': '/uploads/data.zip',
-        'DIR': '/data'
-    },
-    'MODEL': {
-        'MODULE': 'neochi.brain.models.behavior.BehaviorClassifier',
-        'KWARGS': {},
-        'DIR': '/models'
-    }
-}
+
+def load_module(module_path):
+    module_path = module_path.split('.')
+    module = '.'.join(module_path[:-1])
+    cls = module_path[-1]
+    return getattr(importlib.import_module(module), cls)
