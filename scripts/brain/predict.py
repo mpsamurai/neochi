@@ -24,8 +24,11 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
+import os
+import pickle
 import time
 import numpy as np
+from sklearn.preprocessing.label import LabelEncoder
 from neochi import utils
 from neochi.core.dataflow.backends import caches
 from neochi.core.dataflow.data import eye
@@ -41,6 +44,10 @@ if __name__ == '__main__':
                              **settings.DATAFLOW['BACKEND']['CACHE']['KWARGS'])
     image = eye.Image(cache)
     state = eye.State(cache)
+
+    with open(os.path.join(settings.BRAIN['MODEL']['DIR'], 'label_encoder.pickle'), 'rb') as f:
+        le = pickle.load(f)
+
     model = utils.load_module(settings.BRAIN['MODEL']['MODULE'])()
     model.load(settings.BRAIN['MODEL']['DIR'])
 
@@ -63,5 +70,5 @@ if __name__ == '__main__':
 
         X = np.array(images)
         X = X.reshape((-1, 32, 32, 15))
-        print(model.predict(X))
+        print(le.classes_[model.predict(X)[0]])
         wait(start_time)

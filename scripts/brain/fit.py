@@ -27,6 +27,7 @@ __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 import os
 import base64
 import zipfile
+import pickle
 import json
 import numpy as np
 from sklearn.preprocessing.label import LabelEncoder
@@ -62,6 +63,8 @@ def fit(zip_path, data_dir, model_dir, model_cls, **kwargs):
     X = X.reshape((-1, 32, 32, 15))
     le = LabelEncoder()
     y = le.fit_transform(labels)
+    with open(os.path.join(model_dir, 'label_encoder.pickle'), 'wb') as f:
+        pickle.dump(le, f)
 
     model = model_cls(shape=X.shape[1:], labels=labels, **kwargs)
     loss, acc = model.fit(X, y)
