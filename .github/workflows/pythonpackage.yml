@@ -28,14 +28,14 @@ jobs:
         sudo python3 -m pip uninstall pip
         curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
         sudo python3 get-pip.py
-        pip3 install -r requirements.txt
-        pip3 install opencv-python
+        sudo pip3 install -r requirements.txt
+        sudo pip3 install opencv-python
     - name: Lint with flake8
       run: |
-        pip3 install flake8
+        sudo pip3 install flake8
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pip3 install pytest
+        sudo pip3 install pytest
         pytest
