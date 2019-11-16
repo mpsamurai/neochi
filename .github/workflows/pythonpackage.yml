@@ -25,7 +25,9 @@ jobs:
         sudo apt-get install -y python3-pip python3-dev
     - name: Install dependencies
       run: |
+        pip3 install --upgrade pip
         pip3 install -r requirements.txt
+        pip3 install opencv-python
     - name: Lint with flake8
       run: |
         pip3 install flake8
