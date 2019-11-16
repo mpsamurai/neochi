@@ -10,7 +10,9 @@ services:
     command: ["python3", "scripts/brain/predict.py"]
     depends_on:
       - redis
+    network_mode: "host"
   redis:
     image: redis
     ports:
       - 6379:6379
+    network_mode: "host"

@@ -13,4 +13,4 @@ COPY ./scripts /code/scripts
 ENV PYTHONPATH=$PYTHONPATH:/neochi
 ENV PYTHONUNBUFFERED=1
 
-CMD ["pytest"]
+CMD ["run-all"]

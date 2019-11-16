@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    network_mode: "host"
+  neochi:
+    build:
+      context: .
+      dockerfile: Dockerfile-raspbian
+    image: mpsamurai/neochi:20191201-raspbian
+    volumes:
+      - ./uploads:/uploads
+      - ./data:/data
+      - ./models:/models
+      - /usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static
+    depends_on:
+      - redis
+    network_mode: "host"

@@ -29,7 +29,7 @@ DATAFLOW = {
         'CACHE': {
             'MODULE': 'neochi.core.dataflow.backends.caches.redis.RedisCache',
             'KWARGS': {
-                'host': 'redis'
+                'host': 'localhost'
             }
         }
     }
