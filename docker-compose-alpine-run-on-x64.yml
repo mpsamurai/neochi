@@ -1,9 +1,15 @@
 version: '3'
 services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    network_mode: "host"
   neochi:
     build:
       context: .
       dockerfile: Dockerfile-x64
+    image: mpsamurai/neochi:20191201-x64
     volumes:
       - ./uploads:/uploads
       - ./data:/data
@@ -11,9 +17,4 @@ services:
     command: ["python", "scripts/brain/predict.py"]
     depends_on:
       - redis
-    network_mode: "host"
-  redis:
-    image: redis
-    ports:
-      - 6379:6379
     network_mode: "host"
