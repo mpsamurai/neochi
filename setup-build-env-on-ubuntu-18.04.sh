@@ -2,7 +2,7 @@
 
 sudo apt-get update
 sudo apt-get install -y python3-pip python3-dev
-sudo sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo apt-get remove docker docker-engine docker.io containerd runc
 sudo apt-get update
 sudo apt-get install -y\
     apt-transport-https \
