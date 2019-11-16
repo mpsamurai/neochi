@@ -32,7 +32,7 @@ from neochi.eye.eye import Eye
 
 if __name__ == '__main__':
     cache = caches.get_cache(settings.DATAFLOW['BACKEND']['CACHE']['MODULE'], host='localhost')
-    eye = Eye(cache)
+    eye = Eye(cache, init=False)
     while True:
         image = eye.image
         if image is None:

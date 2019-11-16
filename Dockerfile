@@ -8,7 +8,9 @@ RUN pip3 install -r /tmp/requirements.txt
 
 WORKDIR /code
 COPY ./neochi /code/neochi
+COPY ./scripts /code/scripts
 
-ENV PYTHONPATH=$PYTHONPATH:/code
+ENV PYTHONPATH=$PYTHONPATH:/neochi
+ENV PYTHONUNBUFFERED=1
 
 CMD ["pytest"]

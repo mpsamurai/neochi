@@ -34,3 +34,16 @@ DATAFLOW = {
         }
     }
 }
+
+BRAIN = {
+    'DATA': {
+        'UPLOAD_DIR': '/uploads',
+        'ZIP_PATH': '/uploads/data.zip',
+        'DIR': '/data'
+    },
+    'MODEL': {
+        'MODULE': 'neochi.brain.models.behavior.BehaviorClassifier',
+        'KWARGS': {},
+        'DIR': '/models'
+    }
+}
