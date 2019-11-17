@@ -1,8 +1,8 @@
-Flask
-Flask-Cors
-jsonschema
-numpy
-pytest
-redis
-scikit-learn
+Flask==1.1.1
+Flask-Cors==3.0.8
+jsonschema==3.1.1
+numpy==1.17.4
+pytest==5.2.4
+redis==3.3.11
+scikit-learn==0.21.3
 tensorflow
