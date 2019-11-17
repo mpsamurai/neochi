@@ -41,13 +41,3 @@ jobs:
       run: |
         sudo pip3 install pytest
         pytest
-    - name: Install Docker and copy qemu-user-static
-      run: |
-        sudo ./setup-build-env-on-ubuntu-18.04.sh
-    - uses: azure/docker-login@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Create docker image
-      run: |
-        ./build-all.sh
