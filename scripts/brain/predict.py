@@ -52,6 +52,7 @@ if __name__ == '__main__':
     model.load(settings.BRAIN['MODEL']['DIR'])
 
     images = []
+    history = []
     while True:
         start_time = time.time()
         if not state.value['is_capturing']:
@@ -70,5 +71,10 @@ if __name__ == '__main__':
 
         X = np.array(images)
         X = X.reshape((-1, 32, 32, 15))
-        print(le.classes_[model.predict(X)[0]])
+        behavior = le.classes_[model.predict(X)[0]]
+        history.append(1 if behavior == 'no_move_laying' else 0)
+        if len(history) > 10:
+            history.pop(0)
+        print('Detected:', behavior)
+        print('Possibility', np.sum(history) / len(history))
         wait(start_time)
