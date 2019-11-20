@@ -32,7 +32,7 @@ RUN apt-get update && \
         -D PYTHON_EXECUTABLE=/usr/bin/python3 \
         -D BUILD_EXAMPLES=OFF opencv && \
     make -j$(nproc --all) && make install && ldconfig && \
-    ln -s /usr/local/python/cv2/python-3.7/cv2.cpython-35m-arm-linux-gnueabihf.so /usr/local/python/cv2/python-3.7/cv2.so && \
+    ln -s /usr/local/python/cv2/python-3.7/cv2.cpython-37m-arm-linux-gnueabihf.so /usr/local/python/cv2/python-3.7/cv2.so && \
     rm -Rf /tmp/* && \
     apt-get autoclean
 
