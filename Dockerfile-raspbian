@@ -40,6 +40,14 @@ COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt && \
     rm requirements.txt
 
+RUN git clone https://github.com/tensorflow/tensorflow.git && \
+    cd tensorflow && \
+    git checkout r1.15 && \
+    CI_DOCKER_EXTRA_PARAMS="-e CI_BUILD_PYTHON=python3 -e CROSSTOOL_PYTHON_INCLUDE_PATH=/usr/include/python3.7" \
+    tensorflow/tools/ci_build/ci_build.sh PI-PYTHON3 \
+    tensorflow/tools/ci_build/pi/build_raspberry_pi.sh PI_ONE && \
+    pip install tensorflow-version-cp37-none-linux_armv7l.whl
+
 WORKDIR /code
 COPY ./src /code/
 
