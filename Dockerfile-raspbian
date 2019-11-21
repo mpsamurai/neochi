@@ -1,6 +1,6 @@
-FROM balenalib/rpi-raspbian:latest
+FROM balenalib/rpi-raspbian:stretch
 
-COPY ./qemu-arm-static /usr/bin/qemu-arm-static
+COPY qemu-arm-static /usr/bin/qemu-arm-static
 
 WORKDIR /tmp
 RUN apt-get update && \
@@ -31,33 +31,14 @@ RUN apt-get update && \
         -D PYTHON2_EXECUTABLE=/usr/bin/python \
         -D PYTHON_EXECUTABLE=/usr/bin/python3 \
         -D BUILD_EXAMPLES=OFF opencv && \
-    make -j$(nproc --all) && make install && ldconfig && \
-    ln -s /usr/local/python/cv2/python-3.7/cv2.cpython-37m-arm-linux-gnueabihf.so /usr/local/python/cv2/python-3.7/cv2.so && \
+    make -j15 && make install && ldconfig && \
+    ln -s /usr/local/python/cv2/python-3.5/cv2.cpython-35m-arm-linux-gnueabihf.so /usr/local/python/cv2/python-3.5/cv2.so && \
     rm -Rf /tmp/* && \
     apt-get autoclean
 
 COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt && \
     rm requirements.txt
-
-RUN apt-get update && \
-    apt-get install apt-transport-https ca-certificates software-properties-common -y && \
-    apt-get purge -y docker-ce && \
-    curl -fsSL "https://get.docker.com" -o get-docker.sh  && \
-    sh get-docker.sh && \
-    apt-get update && \
-    systemctl start docker.service && \
-    usermod -aG docker pi && \
-    apt-get -y install python3-dev python3-pip libffi-dev && \
-    pip3 install --no-cache-dir docker-compose && \
-    apt-get autoclean && \
-    git clone https://github.com/tensorflow/tensorflow.git && \
-    cd tensorflow && \
-    git checkout r1.15 && \
-    CI_DOCKER_EXTRA_PARAMS="-e CI_BUILD_PYTHON=python3 -e CROSSTOOL_PYTHON_INCLUDE_PATH=/usr/include/python3.7" \
-    tensorflow/tools/ci_build/ci_build.sh PI-PYTHON3 \
-    tensorflow/tools/ci_build/pi/build_raspberry_pi.sh PI_ONE && \
-    pip install tensorflow-version-cp37-none-linux_armv7l.whl
 
 WORKDIR /code
 COPY ./src /code/
