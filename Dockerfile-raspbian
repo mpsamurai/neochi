@@ -42,12 +42,10 @@ RUN pip3 install --no-cache-dir -r requirements.txt && \
 
 RUN apt-get update && \
     apt-get install apt-transport-https ca-certificates software-properties-common -y && \
-    curl https://download.docker.com/linux/raspbian/gpg && \
-    deb https://download.docker.com/linux/raspbian/ buster stable >> /etc/apt/sources.list && \
-    apt-get update && \
     apt-get purge -y docker-ce && \
+    curl -fsSL "https://get.docker.com" -o get-docker.sh  && \
+    sh get-docker.sh && \
     apt-get update && \
-    apt-get install -y docker-ce && \
     systemctl start docker.service && \
     usermod -aG docker pi && \
     apt-get -y install python3-dev python3-pip libffi-dev && \
