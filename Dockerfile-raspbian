@@ -21,7 +21,7 @@ RUN apt-get update && \
     make -j94 && \
     make install && \
     pip3 install --upgrade pip && \
-    pip3 install wheel numpy # && \
+    pip3 install --no-cache-dir wheel numpy # && \
 #    wget -O opencv.zip https://github.com/opencv/opencv/archive/3.4.4.zip && \
 #    wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/3.4.4.zip && \
 #    unzip opencv.zip && \
@@ -47,7 +47,7 @@ RUN apt-get update && \
 #RUN pip3 install --no-cache-dir -r requirements.txt && \
 #    rm requirements.txt
 
-RUN pip3 install --no-cache-dir tensorflow==1.14.0
+RUN pip3 install tensorflow==1.14.0
 
 WORKDIR /code
 COPY ./neochi ./neochi
