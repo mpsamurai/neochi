@@ -22,4 +22,5 @@ RUN apt-get update && \
     make install && \
     cd .. && \
     rm -Rf Python-3.8.0 Python-3.8.0.tgz && \
-    pip3 install --upgrade --no-cache-dir pip
+    pip3 install --upgrade --no-cache-dir pip && \
+    apt-get autoclean
