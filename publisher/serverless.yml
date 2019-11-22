@@ -143,4 +143,4 @@ resources:
     PublisherLogs:
       Type: "AWS::S3::Bucket"
       Properties:
-        BucketName: "org-mpsamurai-cogexp-neochi-publisher-logs"
+        BucketName: "org-mpsamurai-neochi-publisher-logs"
