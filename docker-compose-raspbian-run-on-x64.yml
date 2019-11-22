@@ -7,9 +7,6 @@ services:
       - 6379:6379
     network_mode: "host"
   neochi:
-    build:
-      context: .
-      dockerfile: Dockerfile-raspbian
     image: mpsamurai/neochi:20191201-raspbian
     command: ["python3", "scripts/brain/predict.py"]
     volumes:
