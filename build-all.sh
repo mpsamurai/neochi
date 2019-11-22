@@ -9,11 +9,11 @@
 #docker build -t mpsamurai/neochi:raspbian-python38 --build-arg n_proc=94 -f Dockerfile-raspbian-python38 .
 #docker push mpsamurai/neochi:raspbian-python38
 
-echo "========================================================="
-echo "Build mpsamurai/neochi:raspbian-cv2"
-echo "========================================================="
-docker build -t mpsamurai/neochi:raspbian-cv2 --build-arg n_proc=94 -f Dockerfile-raspbian-cv2 .
-docker push mpsamurai/neochi:raspbian-cv2
+#echo "========================================================="
+#echo "Build mpsamurai/neochi:raspbian-cv2"
+#echo "========================================================="
+#docker build -t mpsamurai/neochi:raspbian-cv2 --build-arg n_proc=94 -f Dockerfile-raspbian-cv2 .
+#docker push mpsamurai/neochi:raspbian-cv2
 
 echo "========================================================="
 echo "Build mpsamurai/neochi:raspbian"
