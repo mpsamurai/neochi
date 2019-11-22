@@ -6,17 +6,17 @@
 echo "========================================================="
 echo "Build mpsamurai/neochi:raspbian-python38"
 echo "========================================================="
-docker build -t mpsamurai/neochi:raspbian-python38 -f Dockerfile-raspbian-python38 .
+docker build -t mpsamurai/neochi:raspbian-python38 --build-arg n_proc=94 -f Dockerfile-raspbian-python38 .
 docker push mpsamurai/neochi:raspbian-python38
 
 echo "========================================================="
 echo "Build mpsamurai/neochi:raspbian-cv2"
 echo "========================================================="
-docker build -t mpsamurai/neochi:raspbian-cv2 -f Dockerfile-raspbian-cv2 .
+docker build -t mpsamurai/neochi:raspbian-cv2 --build-arg n_proc=94 -f Dockerfile-raspbian-cv2 .
 docker push mpsamurai/neochi:raspbian-cv2
 
 echo "========================================================="
 echo "Build mpsamurai/neochi:raspbian"
 echo "========================================================="
-docker build -t mpsamurai/neochi:raspbian -f Dockerfile-raspbian .
+docker build -t mpsamurai/neochi:raspbian --build-arg n_proc=94 -f Dockerfile-raspbian .
 docker push mpsamurai/neochi:raspbian
