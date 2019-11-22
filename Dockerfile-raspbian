@@ -12,6 +12,7 @@ RUN apt-get update && \
         libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
         libxvidcore-dev libx264-dev \
         libgtk-3-dev libatlas-base-dev gfortran \
+        libffi-dev libssl-dev openssl \
         wget curl && \
     wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz && \
     tar zxvf Python-3.7.2.tgz && \
