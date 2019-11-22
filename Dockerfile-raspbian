@@ -43,9 +43,12 @@ RUN apt-get update && \
 #    rm -Rf /tmp/* && \
 #    apt-get autoclean
 
-COPY ./requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt && \
-    rm requirements.txt
+#COPY ./requirements.txt .
+#RUN pip3 install --no-cache-dir -r requirements.txt && \
+#    rm requirements.txt
+
+RUN pip3 install --no-cache-dir tensorflow==1.14.0
+
 
 WORKDIR /code
 COPY ./src /code/
