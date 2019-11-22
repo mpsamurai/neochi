@@ -1,53 +1,9 @@
-FROM balenalib/rpi-raspbian:stretch
-
-COPY qemu-arm-static /usr/bin/qemu-arm-static
+FROM mpsamurai/neochi:raspbian-base
 
 WORKDIR /tmp
-RUN apt-get update && \
-    apt-get -y upgrade && \
-    apt-get install -y \
-        git \
-        build-essential cmake unzip pkg-config \
-        libjpeg-dev libpng-dev libtiff-dev \
-        libavcodec-dev libavformat-dev libswscale-dev libv4l-dev \
-        libxvidcore-dev libx264-dev \
-        libgtk-3-dev libatlas-base-dev gfortran \
-        libffi-dev libssl-dev openssl \
-        wget curl && \
-    wget https://www.python.org/ftp/python/3.7.2/Python-3.7.2.tgz && \
-    tar zxvf Python-3.7.2.tgz && \
-    cd Python-3.7.2 && \
-    ./configure && \
-    make -j94 && \
-    make install && \
-    pip3 install --upgrade pip && \
-    pip3 install --no-cache-dir wheel numpy # && \
-#    wget -O opencv.zip https://github.com/opencv/opencv/archive/3.4.4.zip && \
-#    wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/3.4.4.zip && \
-#    unzip opencv.zip && \
-#    unzip opencv_contrib.zip && \
-#    mv opencv-3.4.4 opencv && \
-#    mv opencv_contrib-3.4.4 opencv_contrib && \
-#    rm opencv.zip opencv_contrib.zip && \
-#    cmake -D CMAKE_BUILD_TYPE=RELEASE \
-#        -D CMAKE_INSTALL_PREFIX=/usr/local \
-#        -D INSTALL_PYTHON_EXAMPLES=OFF \
-#        -D INSTALL_C_EXAMPLES=OFF \
-#        -D OPENCV_ENABLE_NONFREE=OFF \
-#        -D OPENCV_EXTRA_MODULES_PATH=/tmp/opencv_contrib/modules \
-#        -D PYTHON2_EXECUTABLE=/usr/bin/python \
-#        -D PYTHON_EXECUTABLE=/usr/bin/python3 \
-#        -D BUILD_EXAMPLES=OFF opencv && \
-#    make -j94 && make install && ldconfig && \
-#    ln -s /usr/local/python/cv2/python-3.5/cv2.cpython-35m-arm-linux-gnueabihf.so /usr/local/python/cv2/python-3.5/cv2.so && \
-#    rm -Rf /tmp/* && \
-#    apt-get autoclean
-
-#COPY ./requirements.txt .
-#RUN pip3 install --no-cache-dir -r requirements.txt && \
-#    rm requirements.txt
-
-RUN pip3 install tensorflow==1.14.0
+COPY ./requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt && \
+    rm requirements.txt
 
 WORKDIR /code
 COPY ./neochi ./neochi
