@@ -49,9 +49,8 @@ RUN apt-get update && \
 
 RUN pip3 install --no-cache-dir tensorflow==1.14.0
 
-
 WORKDIR /code
-COPY ./src /code/
+COPY ./neochi ./neochi
 
 COPY ./entrypoint.sh /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
