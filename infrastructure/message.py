@@ -24,28 +24,16 @@
 __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 
 
-import copy
 import json
 import urllib.request
 import urllib.error
 
 
-class Config:
-    default = {
-        'url': None
-    }
-
-    def __init__(self, params):
-        self._config = copy.deepcopy(self.default)
-        self._config.update(params)
-
-    def get(self):
-        return self._config
-
-
 class Message:
-    def __init__(self, config):
-        self._config = config
+    def __init__(self, credential):
+        if 'url' not in credential:
+            raise ValueError('url must be specified in credential.')
+        self._credential = credential
 
     def post(self, data):
         if 'username' not in data:
@@ -55,7 +43,7 @@ class Message:
         headers = {
             'Content-Type': 'application/json',
         }
-        req = urllib.request.Request(self._config.get()['url'], json.dumps(data).encode(), headers)
+        req = urllib.request.Request(self._credential['url'], json.dumps(data).encode(), headers)
         try:
             with urllib.request.urlopen(req) as res:
                 return {
