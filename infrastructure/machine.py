@@ -47,7 +47,7 @@ class Config:
             'Tags': [
                 {
                     'Key': 'Name',
-                    'Value': 'NeochiPublisher'
+                    'Value': 'Neochi'
                 },
             ]
         }, ],
