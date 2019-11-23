@@ -75,10 +75,7 @@ class Machine:
 
     def _get_resource(self):
         if not self._ec2:
-            self._ec2 = boto3.resource('ec2',
-                                       aws_access_key_id=self._credential['AWS_ACCESS_KEY_ID'],
-                                       aws_secret_access_key=self._credential['AWS_SECRET_ACCESS_KEY'],
-                                       region_name=self._credential['DEFAULT_REGION'])
+            self._ec2 = boto3.resource('ec2', **self._credential)
         return self._ec2
 
     @property
