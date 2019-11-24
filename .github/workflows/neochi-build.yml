@@ -1,4 +1,4 @@
-name: Python package
+name: Neochi build
 
 on:
   pull_request:
@@ -40,3 +40,7 @@ jobs:
       run: |
         sudo pip3 install pytest
         pytest
+    - name: Publish Docker image
+      run: |
+        sudo pip3 install awscli
+        aws lambda invoke --function-name neochiDockerImagePublisher-dev-createInstance --payload '{"instance": "huge"}'  response.json
