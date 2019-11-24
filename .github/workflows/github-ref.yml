@@ -9,4 +9,4 @@ jobs:
       - uses: actions/checkout@v1
       - name:
         run: |
-          echo $GITHUB_REF | sed 's/refs\/heads\///g'
+          echo $GITHUB_REF
