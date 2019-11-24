@@ -9,4 +9,4 @@ jobs:
       - uses: actions/checkout@v1
       - name:
         run: |
-          echo $GITHUB_REF
+          echo ${GITHUB_REF:11}
