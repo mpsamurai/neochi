@@ -31,21 +31,17 @@ from botocore.exceptions import ClientError
 
 
 class Secret:
-    def __init__(self, credential):
-        for key in ['aws_access_key_id', 'aws_secret_access_key', 'region_name']:
-            try:
-                credential[key]
-            except KeyError:
-                raise ValueError('"{}" must be specified in credential.'.format(key))
+    def __init__(self, credential={}):
         self._credential = credential
         self._session = None
+        self._secret = {}
 
     def _get_session(self):
         if not self._session:
             self._session = boto3.session.Session(**self._credential)
         return self._session
 
-    def get(self, secret_name):
+    def load(self, secret_name):
         # Create a Secrets Manager client
         session = self._get_session()
         client = session.client(service_name='secretsmanager')
@@ -83,8 +79,10 @@ class Secret:
             # Decrypts secret using the associated KMS CMK.
             # Depending on whether the secret is a string or binary, one of these fields will be populated.
             if 'SecretString' in get_secret_value_response:
-                secret = get_secret_value_response['SecretString']
-                return json.loads(secret)
+                self._secret = json.loads(get_secret_value_response['SecretString'])
             else:
                 decoded_binary_secret = base64.b64decode(get_secret_value_response['SecretBinary'])
-                return json.loads(decoded_binary_secret)
+                self._secret = json.loads(decoded_binary_secret)
+
+    def __getitem__(self, item):
+        return self._secret[item]

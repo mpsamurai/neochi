@@ -30,9 +30,7 @@ import urllib.error
 
 
 class Message:
-    def __init__(self, credential):
-        if 'url' not in credential:
-            raise ValueError('url must be specified in credential.')
+    def __init__(self, credential={}):
         self._credential = credential
 
     def post(self, data):
