@@ -28,7 +28,6 @@ import uuid
 import time
 from urllib.parse import urlparse
 import boto3
-import botocore.exceptions
 
 
 def create_user_data():
@@ -351,12 +350,4 @@ class Machine:
             'Key': '/'.join(path[2:])
         }, ExpiresIn=expired_in)
 
-    # def get_output_download_url(self, command_id):
-    #     url, success = self.get_output_url(command_id)
-    #     path = urlparse(url).path.split('/')
-    #     s3 = self._get_s3()
-    #     return s3.generate_presigned_url('get_object', Params={
-    #         'Bucket': path[1],
-    #         'Key': '/'.join(path[2:])
-    #     }, ExpiresIn=3600), success
 
