@@ -26,6 +26,7 @@ __author__ = 'Junya Kaneko <junya@mpsamurai.org>'
 import uuid
 import boto3
 import json
+from datetime import datetime
 from . import machine
 
 
@@ -61,11 +62,14 @@ class Manager:
             },
             'id': str(uuid.uuid4()),
             'state': State.QUEUED,
+            'created_at': datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
             # 'machine_id': '',
             # 'command_id': '',
             # 'success': bool,
             # 'output_url': '',
             # 'output_download_url': '',
+            # 'executed_at': '',
+            # 'done_at': '',
         }
 
         dynamodb = self._get_dynamodb()
@@ -108,6 +112,7 @@ class Manager:
                     job['machine_id'] = m.id
                     job['command_id'] = m.command(job['config']['command'], job['config']['output_dir'])
                     job['state'] = State.INPROGRESS
+                    job['executed_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
                     job_table.put_item(Item=job)
                     sqs.send_message(QueueUrl=running_queue_url, MessageBody=json.dumps({'id': job['id']}))
                     sqs.delete_message(QueueUrl=waiting_queue_url, ReceiptHandle=message['ReceiptHandle'])
@@ -142,6 +147,7 @@ class Manager:
                 else:
                     job['state'] = State.FAILED
                 job['output_download_url'] = m.get_output_download_url(job['output_url'])
+                job['done_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
                 job_table.put_item(Item=job)
                 sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=message['ReceiptHandle'])
                 m.stop()
