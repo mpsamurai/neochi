@@ -286,11 +286,11 @@ class Machine:
         )
         return response['Command']['CommandId']
 
-    def get_output(self, command_id):
+    def get_output(self, command_id, n_trials=3):
         output = None
         success = False
         ssm = self._get_ssm()
-        for _ in range(40):
+        for _ in range(n_trials):
             response = ssm.list_command_invocations(
                 CommandId=command_id,
                 Details=True,
