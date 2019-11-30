@@ -146,7 +146,7 @@ class Manager:
                     job['state'] = State.SUCCESS
                 else:
                     job['state'] = State.FAILED
-                job['output_download_url'] = m.get_output_download_url(job['output_url'])
+                job['output_download_url'] = m.get_download_url(job['output_url'])
                 job['done_at'] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
                 job_table.put_item(Item=job)
                 sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=message['ReceiptHandle'])

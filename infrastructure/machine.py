@@ -343,7 +343,7 @@ class Machine:
             raise TimeoutError('Could not get the output of the command {} at instance {}.'.format(command_id, self.name))
         return success, url
 
-    def get_output_download_url(self, url, expired_in=3600):
+    def get_download_url(self, url, expired_in=3600):
         path = urlparse(url).path.split('/')
         s3 = self._get_s3()
         return s3.generate_presigned_url('get_object', Params={
