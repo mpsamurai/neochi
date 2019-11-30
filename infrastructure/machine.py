@@ -282,6 +282,7 @@ class Machine:
             Parameters={
                 'commands': [cmd, ]
             },
+            TimeoutSeconds=24 * 3600,
             OutputS3BucketName=parsed_output_dir.netloc if output_dir else None,
             OutputS3KeyPrefix=parsed_output_dir.path if output_dir else None
         )
