@@ -227,7 +227,7 @@ class Machine:
             raise MachineDoesNotExist('Instance {} does not exist.'.format(name))
 
     def reload(self):
-        self._instance.attach(self._instance.instance_id)
+        self._instance.load(self._instance.instance_id)
 
     def create(self, config={}):
         ec2 = self._get_resource()
