@@ -44,6 +44,7 @@ apt-get install -y \\
     jq \\
     gnupg-agent \\
     software-properties-common \\
+    qemu-user-static
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 apt-key fingerprint 0EBFCD88
 add-apt-repository \\
