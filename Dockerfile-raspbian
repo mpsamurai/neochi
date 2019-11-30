@@ -2,10 +2,6 @@ FROM balenalib/rpi-raspbian:stretch
 
 COPY qemu-arm-static /usr/bin/qemu-arm-static
 
-FROM balenalib/rpi-raspbian
-
-COPY qemu-arm-static /usr/bin/qemu-arm-static
-
 WORKDIR /tmp
 RUN apt-get update && \
     apt-get -y upgrade && \
