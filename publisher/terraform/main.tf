@@ -38,6 +38,11 @@ resource "aws_iam_role_policy_attachment" "docker_image_publisher_ec2_s3" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "docker_image_publisher_ec2_secrets_manager" {
+  role = "${aws_iam_role.docker_image_publisher_ec2.name}"
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+}
+
 resource "aws_iam_instance_profile" "docker_image_publisher_ec2" {
   name = "${aws_iam_role.docker_image_publisher_ec2.name}"
   role = "${aws_iam_role.docker_image_publisher_ec2.name}"
